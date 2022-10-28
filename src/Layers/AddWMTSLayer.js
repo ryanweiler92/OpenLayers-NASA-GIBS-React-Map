@@ -11,7 +11,7 @@ import {
 } from '../Selectors/Selectors';
 
 const AddWMTSLayer = ({layer}) => {
-    const { map } = useContext(MapContext);
+    const { map, setLayerData } = useContext(MapContext);
 
     useEffect(() => {
     if(!map) return;
@@ -62,7 +62,7 @@ const AddWMTSLayer = ({layer}) => {
         className: id,
       });
 
-      map.addLayer(layerTile)
+      map.addLayer(layerTile);
 
       // componentWillUnmount
       return () => {

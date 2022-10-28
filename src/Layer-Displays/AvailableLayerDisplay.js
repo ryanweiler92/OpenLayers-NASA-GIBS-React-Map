@@ -1,17 +1,16 @@
-import React, { useRef, useState, useEffect, useContext } from "react"
-import MapContext from "./MapContext";
+import React, { useContext } from "react"
+import MapContext from "../Map/MapContext";
 import ListGroup from 'react-bootstrap/ListGroup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import Button from 'react-bootstrap/Button';
 
 const AvailableLayerDisplay = () => {
+    const {availableLayers, setAvailableLayers, setLayerToAdd } = useContext(MapContext);
 
-    const { map, availableLayers, setAvailableLayers, setLayerToAdd,  } = useContext(MapContext);
-
+    // add a layer that's not currently on the map
     const addLayer = (layerID) => {
         const layer = availableLayers[layerID].data
-
         const availableLayersCopy = [...availableLayers];
         availableLayersCopy[layerID].visible = true;
         availableLayersCopy[layerID].active = true;
@@ -28,7 +27,7 @@ const AvailableLayerDisplay = () => {
                 {availableLayers && availableLayers.map((layer) => {
                     if(!layer.active) return (
                         <ListGroup.Item className="d-flex justify-content-between align-items-center text-primary border-primary bg-dark fw-bold" key={layer.name}>
-                            {layer.name}
+                            {layer.title}
                             <Button size="sm" onClick={(e) => addLayer(layer.id)}>
                                 <FontAwesomeIcon icon={faCirclePlus} size="lg"/>
                             </Button>
@@ -38,6 +37,6 @@ const AvailableLayerDisplay = () => {
             </ListGroup>
         </div>
     );
-};
+}
 
 export default AvailableLayerDisplay;

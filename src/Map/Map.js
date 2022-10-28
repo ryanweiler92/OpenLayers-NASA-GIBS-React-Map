@@ -4,11 +4,13 @@ import MapContext from "./MapContext";
 import OlMap from "ol/Map";
 import OlView from "ol/View";
 import * as olProj from "ol/proj";
-import ActiveLayerDisplay from './ActiveLayerDisplay'
-import AvailableLayerDisplay from "./AvailableLayerDisplay";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import ActiveLayerDisplay from '../Layer-Displays/ActiveLayerDisplay'
+import AvailableLayerDisplay from "../Layer-Displays/AvailableLayerDisplay";
 import AddWMTSLayer from '../Layers/AddWMTSLayer'
 import config from '../Config/config'
-import Button from 'react-bootstrap/Button';
+import { availableLayersArray } from '../Config/availableLayers'
 
 const Map = () => {
     const mapRef = useRef();
@@ -17,29 +19,10 @@ const Map = () => {
     // layerData represents the openLayers objects that are needed to remove/add layers
     const [layerData, setLayerData] = useState([]);
 
-    // for adding layers from child components
+    // for adding layers from child components that are not present on the map
     const [layerToAdd, setLayerToAdd] = useState();
 
-    const configLayers = config.layers;
-
-    const availableLayersArray = [
-        {
-            id: 0,
-            name: "VIIRS_SNPP_CorrectedReflectance_TrueColor",
-            active: true,
-            visible: true,
-            data: configLayers.VIIRS_SNPP_CorrectedReflectance_TrueColor
-        },
-        {   
-            id: 1,
-            name: "Coastlines_15m",
-            active: true,
-            visible: true,
-            data: configLayers.Coastlines_15m
-        },
-    ]
-
-    // object of preselected layers
+    // array of preselected layers
     const [availableLayers, setAvailableLayers] = useState(availableLayersArray);
 
     const projection = config.projections.geographic;
@@ -73,31 +56,36 @@ const Map = () => {
 
     // get all of the current layers from the openlayers map object and set to state
     useEffect(() => {
-        if(!map) return;
+        if (!map) return;
         const currentLayers = map.getLayers();
-        setLayerData(currentLayers.array_)
-        }, [map]);
+        setLayerData(currentLayers.array_);
+    }, [map]);
 
     return (
-        <MapContext.Provider value={{ map, availableLayers, setAvailableLayers, layerData, layerToAdd, setLayerToAdd }}>
+        <MapContext.Provider value={{ map, availableLayers, setAvailableLayers, layerData, setLayerData, layerToAdd, setLayerToAdd }}>
             <div ref={mapRef} className="ol-map">
                 {availableLayers && availableLayers.map((layer) => {
-                 if(layer.active) return (
-                        <AddWMTSLayer layer={layer.data} key={layer.name}/>
+                    if (layer.active) return (
+                        <AddWMTSLayer layer={layer.data} key={layer.name} />
                     )
                 })}
                 {layerToAdd ?
                     (<AddWMTSLayer layer={layerToAdd} />)
                     : null}
             </div>
-                <div className="d-flex mx-auto">
-                    <div className="w-50">
-                        <AvailableLayerDisplay />
-                    </div>
-                    <div className="w-50">
-                        <ActiveLayerDisplay />
-                    </div>
+            <div className="d-flex justify-content-center mx-auto">
+                <span className="text-primary mb-3">Add layers from the Available Layers column. Remove layers and toggle visibility in the Active Layers column. Drag and drop to reorder layers.</span>
+            </div>
+            <div className="d-flex mx-auto">
+                <div className="w-50">
+                    <AvailableLayerDisplay />
                 </div>
+                <div className="w-50">
+                    <DndProvider backend={HTML5Backend}>
+                        <ActiveLayerDisplay />
+                    </DndProvider>
+                </div>
+            </div>
         </MapContext.Provider>
     );
 };

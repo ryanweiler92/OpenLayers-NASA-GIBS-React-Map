@@ -1,7 +1,11 @@
 .ol-map {
     min-width: 700px;
     min-height: 500px;
-    margin: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 20px;
+    margin-bottom: 15px;
     height: 500px;
     width: "100%";
+    border: 2px solid black;
 }
