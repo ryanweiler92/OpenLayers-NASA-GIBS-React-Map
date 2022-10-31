@@ -6,16 +6,14 @@ import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import Button from 'react-bootstrap/Button';
 
 const AvailableLayerDisplay = () => {
-    const {availableLayers, setAvailableLayers, setLayerToAdd } = useContext(MapContext);
+    const {availableLayers, setAvailableLayers } = useContext(MapContext);
 
     // add a layer that's not currently on the map
     const addLayer = (layerID) => {
-        const layer = availableLayers[layerID].data
         const availableLayersCopy = [...availableLayers];
         availableLayersCopy[layerID].visible = true;
         availableLayersCopy[layerID].active = true;
         setAvailableLayers(availableLayersCopy);
-        setLayerToAdd(layer.data);
     }
 
     return (

@@ -1,10 +1,10 @@
-const LEFT_WING_EXTENT = [-250, -90, -180, 90];
-const CENTER_MAP_EXTENT = [180, -90, -180, 90];
-const RIGHT_WING_EXTENT = [180, -90, 250, 90];
-const FULL_MAP_EXTENT = [-250, -90, 250, 90];
-const LEFT_WING_ORIGIN = [-540, 90];
-const RIGHT_WING_ORIGIN = [180, 90];
-const CENTER_MAP_ORIGIN = [-180, 90];
+export const LEFT_WING_EXTENT = [-250, -90, -180, 90];
+export const CENTER_MAP_EXTENT = [180, -90, -180, 90];
+export const RIGHT_WING_EXTENT = [180, -90, 250, 90];
+export const FULL_MAP_EXTENT = [-250, -90, 250, 90];
+export const LEFT_WING_ORIGIN = [-540, 90];
+export const RIGHT_WING_ORIGIN = [180, 90];
+export const CENTER_MAP_ORIGIN = [-180, 90];
 
 export const toISOStringSeconds = function(date) {
     const isString = typeof date === 'string' || date instanceof String;
@@ -70,3 +70,29 @@ export const calcExtentsFromLimits = (matrixSet, matrixSetLimits, day, proj) => 
       extent: [minX, minY, maxX, maxY],
     };
   };
+
+
+  /**
+ * Create x/y/z vectortile requester url
+ * @param {Date} date
+ * @param {string} layerName
+ * @param {String} tileMatrixSet
+ *
+ * @return {String} URL
+ */
+export function createVectorUrl(date, layerName, tileMatrixSet) {
+  const time = toISOStringSeconds(roundTimeOneMinute(date));
+  const params = [
+    `TIME=${time}`,
+    `layer=${layerName}`,
+    `tilematrixset=${tileMatrixSet}`,
+    'Service=WMTS',
+    'Request=GetTile',
+    'Version=1.0.0',
+    'FORMAT=application%2Fvnd.mapbox-vector-tile',
+    'TileMatrix={z}',
+    'TileCol={x}',
+    'TileRow={y}',
+  ];
+  return `?${params.join('&')}`;
+}

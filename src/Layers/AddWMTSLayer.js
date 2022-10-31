@@ -10,8 +10,8 @@ import {
     roundTimeOneMinute,
 } from '../Selectors/Selectors';
 
-const AddWMTSLayer = ({layer}) => {
-    const { map, setLayerData } = useContext(MapContext);
+const AddWMTSLayer = ({ layer }) => {
+    const { map, startDate } = useContext(MapContext);
 
     useEffect(() => {
     if(!map) return;
@@ -22,7 +22,7 @@ const AddWMTSLayer = ({layer}) => {
 
     const configSource = config.sources['GIBS:geographic'];
     const configMatrixSet = configSource.matrixSets[matrixSet];
-    const layerDate = "Fri May 06 2022 20:00:00 GMT-0400 (Eastern Daylight Time)"
+    const layerDate = startDate;
     const { tileMatrices, resolutions, tileSize } = configMatrixSet;
     const day = 0;
     const selected = config.projections.geographic;
@@ -71,7 +71,7 @@ const AddWMTSLayer = ({layer}) => {
         }
       }
     
-    }, [map]);
+    }, [map, startDate]);
 
     return null;
 };

@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import MapContext from "../Map/MapContext";
 import DragDropDisplay from "./DragDropDisplay";
 
 const ActiveLayerDisplay = () => {
 
-    const { map, availableLayers, setAvailableLayers, layerData, } = useContext(MapContext);
-
-    const [orderedLayers, setOrderedLayers] = useState();
+    const { 
+        map, 
+        availableLayers, 
+        setAvailableLayers, 
+        layerData,
+        orderedLayers,
+        setOrderedLayers, 
+    } = useContext(MapContext);
 
     // checking the state of visibility property for switches
     const activeCheck = (layerID) => {
@@ -46,11 +51,11 @@ const ActiveLayerDisplay = () => {
     // ordering the layers in the display
     useEffect(() => {
         if (!map) return;
+        const orderedLayersArr = map.getLayers().array_
+        if(!orderedLayersArr.length) return;
 
         const createOrder = () => {
             let mapOrderedLayers = [];
-            const orderedLayersObj = map.getLayers();
-            const orderedLayersArr = orderedLayersObj.array_;
 
             orderedLayersArr.forEach((layer) => {
                 mapOrderedLayers.push(layer.className_);
@@ -70,6 +75,7 @@ const ActiveLayerDisplay = () => {
         createOrder();
     }, [map, availableLayers]);
 
+    // this gets called whenever a layer is added, removed or reordered
     useEffect(() => {
         if (!map) return;
 

@@ -6,11 +6,12 @@ import OlView from "ol/View";
 import * as olProj from "ol/proj";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import ActiveLayerDisplay from '../Layer-Displays/ActiveLayerDisplay'
-import AvailableLayerDisplay from "../Layer-Displays/AvailableLayerDisplay";
-import AddWMTSLayer from '../Layers/AddWMTSLayer'
-import config from '../Config/config'
-import { availableLayersArray } from '../Config/availableLayers'
+import ActiveLayersDisplay from '../Layer-Displays/ActiveLayersDisplay'
+import AvailableLayersDisplay from "../Layer-Displays/AvailableLayersDisplay";
+import AddLayer from "../Layers/AddLayer";
+import DateSelector from '../Date/DateSelector';
+import config from '../Config/config';
+import { availableLayersArray } from '../Config/availableLayers';
 
 const Map = () => {
     const mapRef = useRef();
@@ -19,11 +20,21 @@ const Map = () => {
     // layerData represents the openLayers objects that are needed to remove/add layers
     const [layerData, setLayerData] = useState([]);
 
-    // for adding layers from child components that are not present on the map
-    const [layerToAdd, setLayerToAdd] = useState();
-
     // array of preselected layers
     const [availableLayers, setAvailableLayers] = useState(availableLayersArray);
+
+    const [orderedLayers, setOrderedLayers] = useState();
+
+    const getThreeWeeksAgo = () => {
+        const dateOffset = (24 * 60 * 60 * 1000) * 21;
+        const myDate = new Date();
+        myDate.setTime(myDate.getTime() - dateOffset);
+        return myDate;
+    }
+
+    const threeWeeksAgo = getThreeWeeksAgo();
+
+    const [startDate, setStartDate] = useState(threeWeeksAgo);
 
     const projection = config.projections.geographic;
 
@@ -62,27 +73,34 @@ const Map = () => {
     }, [map]);
 
     return (
-        <MapContext.Provider value={{ map, availableLayers, setAvailableLayers, layerData, setLayerData, layerToAdd, setLayerToAdd }}>
+        <MapContext.Provider value={{
+            map,
+            availableLayers,
+            setAvailableLayers,
+            layerData,
+            setLayerData,
+            startDate,
+            setStartDate,
+            orderedLayers,
+            setOrderedLayers,
+        }}>
             <div ref={mapRef} className="ol-map">
                 {availableLayers && availableLayers.map((layer) => {
                     if (layer.active) return (
-                        <AddWMTSLayer layer={layer.data} key={layer.name} />
+                        <AddLayer layer={layer.data} key={layer.name} />
                     )
                 })}
-                {layerToAdd ?
-                    (<AddWMTSLayer layer={layerToAdd} />)
-                    : null}
             </div>
-            <div className="d-flex justify-content-center mx-auto">
-                <span className="text-primary mb-3">Add layers from the Available Layers column. Remove layers and toggle visibility in the Active Layers column. Drag and drop to reorder layers.</span>
+            <div className="d-flex mx-auto">
+                <DateSelector />
             </div>
             <div className="d-flex mx-auto">
                 <div className="w-50">
-                    <AvailableLayerDisplay />
+                    <AvailableLayersDisplay />
                 </div>
                 <div className="w-50">
                     <DndProvider backend={HTML5Backend}>
-                        <ActiveLayerDisplay />
+                        <ActiveLayersDisplay />
                     </DndProvider>
                 </div>
             </div>
